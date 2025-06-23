@@ -16,6 +16,7 @@ class Task extends Model
         'description',
         'start_timestamp',
         'end_timestamp',
+        'status',
         'project_id',
     ];
 
