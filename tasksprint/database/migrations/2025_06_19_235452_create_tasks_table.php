@@ -19,6 +19,7 @@ class CreateTasksTable extends Migration
             $table->timestamp('end_timestamp')->nullable();
             $table->enum('status', ['todo', 'in_progress', 'done'])->default('todo');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

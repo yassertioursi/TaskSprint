@@ -7,7 +7,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\JsonResponse;
-use Illuminate\Support\Facades\Validator ; 
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -38,6 +40,7 @@ class AuthController extends Controller
             'token' => $token
         ], 'User registered successfully', 201);
     }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -45,16 +48,19 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return $this->failResponse('Invalid credentials', 401);
+        $credentials = $request->only('email', 'password');
+
+        try {
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return $this->failResponse('Invalid credentials', 401);
+            }
+        } catch (JWTException $e) {
+            return $this->failResponse('Could not create token', 500);
         }
 
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return $this->successResponse([
-            'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'expires_in' => auth('api')->factory()->getTTL() * 60,
         ], 'Login successful');
     }
 }
