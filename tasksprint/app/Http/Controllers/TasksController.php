@@ -12,6 +12,36 @@ class TasksController extends Controller
 {
     use JsonResponse;
 
+
+    public function getCounts(Request $request)
+    {
+        $userId = auth()->id();
+
+
+        $baseQuery = Task::where('user_id', $userId);
+
+
+
+
+
+        $total = $baseQuery->count();
+
+
+        $toDo = (clone $baseQuery)->where('status', 'todo')->count();
+        $inProgress = (clone $baseQuery)->where('status', 'in_progress')->count();
+        $done = (clone $baseQuery)->where('status', 'done')->count();
+
+        return $this->successResponse([
+            'counts' => [
+                'total' => $total,
+                'to_do' => $toDo,
+                'in_progress' => $inProgress,
+                'done' => $done
+            ],
+            'filter' => $request->has('date') ? ['date' => $request->input('date')] : null
+        ], 'Task counts retrieved successfully', 200);
+    }
+
     public function index(Request $request)
     {
 
