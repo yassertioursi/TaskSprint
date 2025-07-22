@@ -23,7 +23,7 @@ Route::middleware('auth:api')->group(function () {
         ->only(['index', 'show', 'store', 'update', 'destroy']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::apiResource('projects', ProjectsController::class)
         ->only(['index', 'show', 'store', 'update', 'destroy']);
 });

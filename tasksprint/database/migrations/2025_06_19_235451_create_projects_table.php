@@ -12,7 +12,6 @@ class CreateProjectsTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->timestamp('start_timestamp')->nullable();
             $table->timestamp('end_timestamp')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();

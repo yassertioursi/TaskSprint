@@ -24,9 +24,7 @@ class CreateProjectRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'start_timestamp' => 'required|date|after_or_equal:now',
-            'end_timestamp' => 'required|date|after:start_timestamp',
-            'user_id' => 'required|integer|exists:users,id',
+            'end_timestamp' => 'required|date|after_or_equal:now',
         ];
     }
 

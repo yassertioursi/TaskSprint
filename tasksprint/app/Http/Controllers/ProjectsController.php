@@ -26,7 +26,7 @@ class ProjectsController extends Controller
     public function store(CreateProjectRequest $request)
     {
         $validatedData = $request->validated();
-
+        $validatedData['user_id'] = auth()->id();
 
         $project = Project::create($validatedData);
 
