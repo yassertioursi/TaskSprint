@@ -43,28 +43,37 @@ class TasksController extends Controller
     }
 
     public function index(Request $request)
-{
-    $query = Task::where('user_id', auth()->id());
+    {
+        $query = Task::where('user_id', auth()->id());
 
-    if ($request->has('date') && $request->filled('date')) {
-        $date = $request->input('date');
-
-        try {
-            $parsedDate = Carbon::parse($date)->format('Y-m-d');
-            $query->whereDate('start_timestamp', '<=', $parsedDate)
-                  ->whereDate('end_timestamp', '>=', $parsedDate);
-        } catch (\Exception $e) {
-            return $this->failResponse('Invalid date format. Please use YYYY-MM-DD format.', 400);
+        // Filter by date
+        if ($request->has('date') && $request->filled('date')) {
+            $date = $request->input('date');
+            try {
+                $parsedDate = Carbon::parse($date)->format('Y-m-d');
+                $query->whereDate('start_timestamp', '<=', $parsedDate)
+                      ->whereDate('end_timestamp', '>=', $parsedDate);
+            } catch (\Exception $e) {
+                return $this->failResponse('Invalid date format. Please use YYYY-MM-DD format.', 400);
+            }
         }
+
+        // Filter by status
+        if ($request->has('status') && $request->filled('status')) {
+            $status = $request->input('status');
+            $query->where('status', $status);
+        }
+
+        $tasks = $query->get();
+
+        return $this->successResponse([
+            'tasks' => $tasks,
+            'filter' => [
+                'date' => $request->input('date'),
+                'status' => $request->input('status')
+            ],
+        ], 'Tasks retrieved successfully', 200);
     }
-
-    $tasks = $query->get();
-
-    return $this->successResponse([
-        'tasks' => $tasks,
-        'filter' => $request->has('date') ? ['date' => $request->input('date')] : null
-    ], 'Tasks retrieved successfully', 200);
-}
 
     public function store(CreateTaskRequest $request)
     {
